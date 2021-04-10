@@ -27,31 +27,45 @@ import csv
 
 
 def main():
-	with open('symphonyQ_data.csv', 'w', newline='', encoding='utf-8') as csvfile:
-		writer = csv.writer(csvfile)
-		writer.writerow(['School', 'Question', 'Key Stage','No. Groups','Question Option 1', 'Question Option 2', 'Question Option 3', 'Question Option 4', 'Votes 1', 'Votes 2', 'Votes 3', 'Votes 4'])
-
-
 	all_rows = []
-
+	number_of_options_list = []
+	
 	for info in sys.stdin:
 		info = info.rstrip()
 		info = info.split(':')
-
+		
 		school_name = info[0]
 		question = info[1]
 		csv_file = info[2] + '.csv'
 		print(school_name)
 		print(question)
-
+		
 		if csv_file != '*.csv':
 			with open(csv_file) as csvfile:
 				reader = csv.reader(csvfile)
 				curr_school = ""
-
+				number_of_options = -1
 
 				for row in reader:
 					if row[2] == question:
+						#get rid of the comments at the end (to currently estimate the number of options)
+						for n in range(len(row)-1,-1,-1):
+							if not row[n].isdigit():
+								del row[n]
+							else:
+								break
+						
+						# deduce the number of options from the number of columns
+						if number_of_options == -1:
+							#if not initialized
+							if (len(row) - 10)%2 != 0:
+								#there must be same number of options as answers
+								raise Exception("Inconsistent columns in file {}, session {}, class {}.".format(csv_file,row[0],row[5]))
+							number_of_options = int((len(row) - 10)/2)
+							number_of_options_list.append(number_of_options)
+						else:
+							if number_of_options != int((len(row) - 10)/2):
+								raise Exception("Inconsistent columns in file {}, session {}, class {}.".format(csv_file,row[0],row[5]))
 						new_row = []
 						
 						if school_name == curr_school:
@@ -64,6 +78,11 @@ def main():
 
 						new_row.append(row[6])
 						new_row.append(row[7])
+
+						for n in range(10, 10 + 2*number_of_options):
+							new_row.append(row[n])
+						
+						"""
 						new_row.append(row[10])
 						new_row.append(row[11])
 						new_row.append(row[12])
@@ -72,11 +91,23 @@ def main():
 						new_row.append(row[15])
 						new_row.append(row[16])
 						new_row.append(row[17])
+						"""
 
 						all_rows.append(new_row)
 
-	with open('symphonyQ_data.csv', 'a', newline='', encoding='utf-8') as csvfile:
+	with open('symphonyQ_data.csv', 'w', newline='', encoding='utf-8') as csvfile:
 		writer = csv.writer(csvfile)
+
+		header = ['School', 'Question', 'Key Stage','No. Groups']
+
+		for n in range(1,max(number_of_options_list)+1):
+			header.append('Question Option {}'.format(n))
+
+		for n in range(1,max(number_of_options_list)+1):
+			header.append('Votes {}'.format(n))
+		
+		writer.writerow(header)
+
 		for row in all_rows:
 			writer.writerow(row)
 
