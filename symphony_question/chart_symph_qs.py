@@ -66,21 +66,26 @@ def main():
 						else:
 							if number_of_options != int((len(row) - 10)/2):
 								raise Exception("Inconsistent columns in file {}, session {}, class {}.".format(csv_file,row[0],row[5]))
-						new_row = []
+						new_row_info = []
+						new_row_options = []
+						new_row_votes = []
 						
 						if school_name == curr_school:
-							new_row.append("")
-							new_row.append("")
+							new_row_info.append("")
+							new_row_info.append("")
 						else:
-							new_row.append(school_name)
-							new_row.append(question)
+							new_row_info.append(school_name)
+							new_row_info.append(question)
 							curr_school = school_name
 
-						new_row.append(row[6])
-						new_row.append(row[7])
+						new_row_info.append(row[6])
+						new_row_info.append(row[7])
 
-						for n in range(10, 10 + 2*number_of_options):
-							new_row.append(row[n])
+						for n in range(10, 10 + number_of_options):
+							new_row_options.append(row[n])
+						
+						for n in range(10+number_of_options, 10 + 2*number_of_options):
+							new_row_votes.append(row[n])
 						
 						"""
 						new_row.append(row[10])
@@ -93,7 +98,7 @@ def main():
 						new_row.append(row[17])
 						"""
 
-						all_rows.append(new_row)
+						all_rows.append((new_row_info,new_row_options,new_row_votes))
 
 	with open('symphonyQ_data.csv', 'w', newline='', encoding='utf-8') as csvfile:
 		writer = csv.writer(csvfile)
@@ -108,7 +113,9 @@ def main():
 		
 		writer.writerow(header)
 
-		for row in all_rows:
+		for new_row_info,new_row_options,new_row_votes in all_rows:
+			blank_spaces = max(number_of_options_list) - len(new_row_votes)
+			row = new_row_info + new_row_options + [""]*blank_spaces + new_row_votes + [""]*blank_spaces
 			writer.writerow(row)
 
 
