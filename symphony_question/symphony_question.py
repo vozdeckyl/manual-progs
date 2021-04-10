@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 import os
+import gen_symph_school_list
+import chart_symph_qs
 
 class Application(tk.Frame):
     def __init__(self, master=None):
@@ -37,10 +39,10 @@ class Application(tk.Frame):
         self.question_text.grid(row=2,column=2,padx=10)
         self.question_text["textvariable"] = self.question
 
-        self.process_button = tk.Button(self, text="Process", fg="red", command=self.process)
+        self.process_button = tk.Button(self, text="Generate School List", fg="red", command=self.generate_school_list)
         self.process_button.grid(row=3,column=2,padx=10,pady=5,sticky="E")
 
-        self.edit_button = tk.Button(self, text="Open&Edit Temporary Textfile", command=self.open_textfile)
+        self.edit_button = tk.Button(self, text="Open&Edit School List", command=self.open_textfile)
         self.edit_button.grid(row=4,column=2,padx=10,pady=5)
 
         self.edit_button = tk.Button(self, text="Open Folder", command=self.open_folder)
@@ -52,16 +54,20 @@ class Application(tk.Frame):
     def get_path(self):
         self.path.set(tk.filedialog.askopenfilename(initialdir = os.path.dirname(os.path.realpath(__file__)), title = "Select a File", filetypes = (("CSV files","*.csv*"),("all files","*.*"))))
 
-    def process(self):
-        # ... call the external function here
-        pass
+    def generate_school_list(self):
+        try:
+            gen_symph_school_list.generate(self.question.get(),self.path.get())
+        except Exception as e:
+            tk.messagebox.showerror("Error", e)
 
     def generate_chart(self):
-        #call external function
-        pass
-    
+        try:
+            chart_symph_qs.generate_chart()
+        except Exception as e:
+            tk.messagebox.showerror("Error", e)
+
     def open_textfile(self):
-        os.system("notepad {}".format(self.path.get()))
+        os.system("notepad {}".format(os.path.dirname(self.path.get()).rstrip("/")+"/school_list.txt"))
     
     def open_folder(self):
         os.system("explorer {}".format(os.path.dirname(self.path.get())).replace("/","\\"))
@@ -70,5 +76,6 @@ class Application(tk.Frame):
 root = tk.Tk()
 root.title("Symphony Questions")
 root.geometry("720x200")
+root.resizable(False, False)
 app = Application(master=root)
 app.mainloop()
