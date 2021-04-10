@@ -44,7 +44,7 @@ def main():
 	if len(sys.argv) > 2:
 		week = sys.argv[2]
 
-	with open('school_questions.csv') as csvfile:
+	with open('school_questions.csv', encoding='utf-8') as csvfile:
 		reader = csv.reader(csvfile)
 		
 		school_name = ""
@@ -83,7 +83,7 @@ def main():
 				
 
 		print(recorded_schools)
-		with open('school_list.txt', 'w+') as textfile:
+		with open('school_list.txt', 'w+', encoding='utf-8') as textfile:
 			for school in recorded_schools:
 				textfile.write(str(school) + ':' + str(recorded_schools[school]) + ':school_' + '\n')
 
