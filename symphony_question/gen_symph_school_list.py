@@ -17,6 +17,7 @@
 #	This program will create a partially completed text file input for use in chart_symph_qs.py called school_list.txt
 
 import sys
+import os
 import csv
 
 def create_dict(question):
@@ -33,18 +34,9 @@ def create_dict(question):
 
 	return q_dict
 
-def main():
+def generate(question, question_file_path = "school_questions.csv"):
 
-	question = ""
-	week = "11/12/2020"
-
-	if len(sys.argv) > 1:
-		question = sys.argv[1]
-
-	if len(sys.argv) > 2:
-		week = sys.argv[2]
-
-	with open('school_questions.csv', encoding='utf-8') as csvfile:
+	with open(question_file_path, encoding='utf-8') as csvfile:
 		reader = csv.reader(csvfile)
 		
 		school_name = ""
@@ -83,9 +75,15 @@ def main():
 				
 
 		print(recorded_schools)
-		with open('school_list.txt', 'w+', encoding='utf-8') as textfile:
+
+		if question_file_path == "school_questions.csv":
+			output_file_path = "school_list.txt"
+		else:
+			output_file_path = os.path.dirname(question_file_path).rstrip("/") + "/school_list.txt"
+
+		with open(output_file_path, 'w+', encoding='utf-8') as textfile:
 			for school in recorded_schools:
 				textfile.write(str(school) + ':' + str(recorded_schools[school]) + ':school_' + '\n')
 
 if __name__ == '__main__':
-	main()
+	generate(sys.argv[1])
