@@ -27,7 +27,7 @@ import csv
 
 
 def main():
-	with open('symphonyQ_data.csv', 'w', newline='') as csvfile:
+	with open('symphonyQ_data.csv', 'w', newline='', encoding='utf-8') as csvfile:
 		writer = csv.writer(csvfile)
 		writer.writerow(['School', 'Question', 'Key Stage','No. Groups','Question Option 1', 'Question Option 2', 'Question Option 3', 'Question Option 4', 'Votes 1', 'Votes 2', 'Votes 3', 'Votes 4'])
 
@@ -75,7 +75,7 @@ def main():
 
 						all_rows.append(new_row)
 
-	with open('symphonyQ_data.csv', 'a', newline='') as csvfile:
+	with open('symphonyQ_data.csv', 'a', newline='', encoding='utf-8') as csvfile:
 		writer = csv.writer(csvfile)
 		for row in all_rows:
 			writer.writerow(row)
